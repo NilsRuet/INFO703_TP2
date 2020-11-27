@@ -2,6 +2,7 @@
 package fr.usmb.m1isc.compilation.tp;
 import java_cup.runtime.Symbol;
 import java.util.HashMap;
+import fr.usmb.m1isc.compilation.tp.Arbre.TypeNoeud;
 
 /* inclusion du code */
 
@@ -15,18 +16,21 @@ action code {:
 
  
 parser code {:
-    // pour le parser (redefinition de la methode reportant les erreurs d'analyse)
-  public void report_error(String message, Object info) {
- 	String m = "";
- 	if (info instanceof java_cup.runtime.Symbol) {
- 	    Symbol s = ((Symbol) info); 	
- 		if (s != null && s.left >= 0 ) {
- 			/* Ajoute le numero de ligne  et de colonne*/
- 			m =  "Ligne " + (s.left+1) + ", Colonne " + (s.right+1) + " : ";
- 			}
- 		}
- 	m = m + message;
-    System.err.println(m);
+    // pour le parser
+    // Pour récupérer le résultat après un parse
+	public Arbre tree = null;
+	// (redefinition de la methode reportant les erreurs d'analyse)
+    public void report_error(String message, Object info) {
+        String m = "";
+        if (info instanceof java_cup.runtime.Symbol) {
+            Symbol s = ((Symbol) info);
+            if (s != null && s.left >= 0 ) {
+                /* Ajoute le numero de ligne  et de colonne*/
+                m =  "Ligne " + (s.left+1) + ", Colonne " + (s.right+1) + " : ";
+                }
+            }
+        m = m + message;
+        System.err.println(m);
     }
 :};
 
@@ -54,41 +58,43 @@ precedence left MOINS_UNAIRE;
 /* grammaire */
 // un pg est une sequence d'insctions terminee par point
 program ::= 
-	sequence:s POINT  {: System.out.println(s.toString()); :}
+	sequence:s POINT                                    {: tree = (Arbre)s; :}
 	;
 
 // une sequence est une suite d'instructions separes par des point virgules	
-sequence ::= expression:e1 SEMI sequence:e2             {: RESULT = new Arbre((Arbre)e1, ";", (Arbre)e2); :}
-	 	   | expression:e                               {: RESULT = (Arbre)e; :}
+sequence ::= expression:e1 SEMI sequence:e2             {: RESULT = new Arbre((Arbre)e1, TypeNoeud.SEMI, (Arbre)e2); :}
+	 	   | expression:e                               {: RESULT = e; :}
 	 	   |
 	 	   ;
 
 // une expession est soit une affectation ,une 			 
 expression ::= expr:e                                   {: RESULT = (Arbre)e; :}
-             | LET IDENT:nom EGAL expr:e  				{: RESULT = new Arbre(new Arbre(nom),"let",(Arbre)e); :}
-             | WHILE expr:cond DO expression:e 1
-             | IF expr:cond THEN expression:a1 ELSE expression:a2 
-             | error                                    {: RESULT = new Arbre("Erreur"); :}// reprise d'erreurs
+             | LET IDENT:nom EGAL expr:e  				{: RESULT = new Arbre(new Arbre(TypeNoeud.IDENTIFIER,nom),TypeNoeud.LET,(Arbre)e); :}
+             | WHILE expr:cond DO expression:e 1        {: RESULT = new Arbre((Arbre)cond,TypeNoeud.WHILE,(Arbre)e); :}
+             | IF expr:cond THEN expression:a1 ELSE expression:a2
+                                                        {:  Arbre branche = new Arbre((Arbre)a1,TypeNoeud.ELSE,(Arbre)a2);
+                                                            RESULT = new Arbre((Arbre)cond, TypeNoeud.IF, branche);:}
+             | error                                    {: RESULT = new Arbre(TypeNoeud.ERROR); :}// reprise d'erreurs
 			 ;
 
 // 
-expr ::= NOT:op expr:e                                  {: RESULT = new Arbre(null,"not",(Arbre)e); :}
-	   | expr:e1 AND expr:e2                            {: RESULT = new Arbre((Arbre)e1,"&&",(Arbre)e2); :}
-	   | expr:e1 OR expr:e2                             {: RESULT = new Arbre((Arbre)e1,"||",(Arbre)e2); :}
-	   | expr:e1 EGAL expr:e2                           {: RESULT = new Arbre((Arbre)e1,"==",(Arbre)e2); :}
-	   | expr:e1 GT expr:e2                             {: RESULT = new Arbre((Arbre)e1,">",(Arbre)e2); :}
-	   | expr:e1 GTE expr:e2                            {: RESULT = new Arbre((Arbre)e1,">=",(Arbre)e2); :}
-	   | expr:e1 PLUS expr:e2                           {: RESULT = new Arbre((Arbre)e1,"+",(Arbre)e2); :}
-	   | expr:e1 MOINS expr:e2                          {: RESULT = new Arbre((Arbre)e1,"-",(Arbre)e2); :}
-	   | expr:e1 MUL expr:e2                            {: RESULT = new Arbre((Arbre)e1,"*",(Arbre)e2); :}
-	   | expr:e1 DIV expr:e2                            {: RESULT = new Arbre((Arbre)e1,"/",(Arbre)e2); :}
-	   | expr:e1 MOD expr:e2                            {: RESULT = new Arbre((Arbre)e1,"mod",(Arbre)e2); :}
-	   | MOINS expr:e	{: RESULT = new Arbre(null,"-",(Arbre)e); :} %prec MOINS_UNAIRE
-	   | OUTPUT expr:e
-	   | INPUT
-	   | NIL                                            {: RESULT = new Arbre("NIL"); :}
-	   | ENTIER:n                                       {: RESULT = new Arbre(n+""); :}
-	   | IDENT:id                                       {: RESULT = new Arbre(id+""); :}
-	   | PAR_G sequence:e PAR_D
+expr ::= NOT:op expr:e                                  {: RESULT = new Arbre(null,TypeNoeud.NOT,(Arbre)e); :}
+	   | expr:e1 AND expr:e2                            {: RESULT = new Arbre((Arbre)e1,TypeNoeud.AND,(Arbre)e2); :}
+	   | expr:e1 OR expr:e2                             {: RESULT = new Arbre((Arbre)e1,TypeNoeud.OR,(Arbre)e2); :}
+	   | expr:e1 EGAL expr:e2                           {: RESULT = new Arbre((Arbre)e1,TypeNoeud.EQ,(Arbre)e2); :}
+	   | expr:e1 GT expr:e2                             {: RESULT = new Arbre((Arbre)e1,TypeNoeud.LT,(Arbre)e2); :}
+	   | expr:e1 GTE expr:e2                            {: RESULT = new Arbre((Arbre)e1,TypeNoeud.LTE,(Arbre)e2); :}
+	   | expr:e1 PLUS expr:e2                           {: RESULT = new Arbre((Arbre)e1,TypeNoeud.PLUS,(Arbre)e2); :}
+	   | expr:e1 MOINS expr:e2                          {: RESULT = new Arbre((Arbre)e1,TypeNoeud.MINUS,(Arbre)e2); :}
+	   | expr:e1 MUL expr:e2                            {: RESULT = new Arbre((Arbre)e1,TypeNoeud.MULT,(Arbre)e2); :}
+	   | expr:e1 DIV expr:e2                            {: RESULT = new Arbre((Arbre)e1,TypeNoeud.DIV,(Arbre)e2); :}
+	   | expr:e1 MOD expr:e2                            {: RESULT = new Arbre((Arbre)e1,TypeNoeud.MOD,(Arbre)e2); :}
+	   | MOINS expr:e	                                {: RESULT = new Arbre(null,TypeNoeud.NEGATIVE,(Arbre)e); :} %prec MOINS_UNAIRE
+	   | OUTPUT expr:e                                  {: RESULT = new Arbre(null,TypeNoeud.OUT,(Arbre)e); :}
+	   | INPUT                                          {: RESULT = new Arbre(TypeNoeud.IN); :}
+	   | NIL                                            {: RESULT = new Arbre(TypeNoeud.NIL); :}
+	   | ENTIER:n                                       {: RESULT = new Arbre(TypeNoeud.INTEGER, n); :}
+	   | IDENT:id                                       {: RESULT = new Arbre(TypeNoeud.IDENTIFIER, id); :}
+	   | PAR_G sequence:e PAR_D                         {: RESULT = e; :}
 	   ;
 
