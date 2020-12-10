@@ -8,6 +8,4 @@ let prixTtc =  prixHt * 119 / 100;
 prixTtc + 100;
 let a = input;
 let b = input;
-while (0 < b)
-do (let aux=(a mod b); let a=b; let b=aux );
 output a .

@@ -12,6 +12,22 @@ public class LambadaTree {
     private NodeType type;
     private Object rac;
 
+    public LambadaTree getLeft() {
+        return left;
+    }
+
+    public LambadaTree getRight() {
+        return right;
+    }
+
+    public NodeType getType() {
+        return type;
+    }
+
+    public Object getRac() {
+        return rac;
+    }
+
     public LambadaTree(LambadaTree left, NodeType t, Object rac, LambadaTree right) {
         this.left = left;
         this.right = right;
@@ -28,7 +44,7 @@ public class LambadaTree {
     }
 
     public LambadaTree(NodeType t){
-        this(null, t);
+        this(t, null);
     }
 
     @Override
