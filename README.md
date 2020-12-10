@@ -4,7 +4,7 @@ L'objectif du TP est d'utiliser les outils JFlex et CUP pour générer des arbre
 
 ## Exercice 1 :
 
-Utiliser JFlex et CUP pour générer l'arbre abstrait correspondant à l'analyse d'expressions arithmétiques sur les nombres entiers.
+Utiliser JFlex et CUP pour générer l'lambadaTree abstrait correspondant à l'analyse d'expressions arithmétiques sur les nombres entiers.
 
 Exemple de fichier source pour l'analyseur :
 
@@ -26,11 +26,11 @@ L'expression
 let prixTtc =  prixHt * 119 / 100;
 prixTtc + 100
 ```
-pourra donner, par exemple, l'arbre suivant :
+pourra donner, par exemple, l'lambadaTree suivant :
 
-![exemple arbre abtrait](arbre.png "arbre abstrait")
+![exemple lambadaTree abtrait](lambadaTree.png "lambadaTree abstrait")
 
-Une fois l'arbre généré, récupérez le dans le programme pricipal et affichez le, par exemple sous la forme d'une expression préfixée parenthésée :
+Une fois l'lambadaTree généré, récupérez le dans le programme pricipal et affichez le, par exemple sous la forme d'une expression préfixée parenthésée :
 `(; (LET prixTtc (/ (* prixHt 119) 100)) (+ prixTtc 100))`
 
 ## Exercice 2 :
