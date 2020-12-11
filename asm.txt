@@ -1,0 +1,36 @@
+DATA SEGMENT
+a DD
+b DD
+c DD
+DATA ENDS
+CODE SEGMENT
+in eax
+push eax
+pop eax
+mov a,eax
+in eax
+push eax
+pop eax
+mov b,eax
+mov eax,a
+push eax
+mov eax,b
+push eax
+pop eax
+pop ebx
+add eax, ebx
+push eax
+pop eax
+mov c,eax
+mov eax,c
+push eax
+pop eax
+mul eax, -1
+push eax
+pop eax
+mov c,eax
+mov eax,c
+push eax
+pop eax
+out eax
+CODE ENDS

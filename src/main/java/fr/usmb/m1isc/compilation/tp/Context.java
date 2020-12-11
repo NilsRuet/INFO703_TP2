@@ -81,7 +81,7 @@ public class Context {
             case IDENTIFIER:
                 String identifier = (String)currentTree.getRac();
                 if(!_environments.identifierExists(identifier)){
-                    System.err.println("Undeclared identifier : "+identifier);
+                    System.err.println("Use of undeclared identifier : "+identifier);
                     return false;
                 }
                 break;
@@ -95,12 +95,10 @@ public class Context {
 
     private boolean buildLet(LambadaTree tree){
         String identifier = (String)tree.getLeft().getRac();
-        if(_environments.identifierExists(identifier)){
-            System.err.println("Identifier already exists : "+identifier);
-            return false;
+        if(!_identifiers.contains(identifier)){
+            _identifiers.add(identifier);
+            _environments.createIdentifier(identifier);
         }
-        _identifiers.add(identifier);
-        _environments.createIdentifier(identifier);
         return true;
     }
 
