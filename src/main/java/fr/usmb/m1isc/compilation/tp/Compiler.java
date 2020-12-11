@@ -54,13 +54,16 @@ public class Compiler {
             case PLUS:
                 return compilePlus(t);
             case MINUS:
+                return compileMinus(t);
             case MULT:
+                return compileMult(t);
             case DIV:
+                return compileDiv(t);
             case MOD:
+                return compileMod(t);
             default:
-                break;
+                return "";
         }
-        return "";
     }
 
     private String compileSemi(LambadaTree t){
@@ -111,18 +114,41 @@ public class Compiler {
     }
 
     private String compileMinus(LambadaTree t){
-        return "";
+        return compileTree(t.getLeft())+
+                compileTree(t.getRight())+
+                "pop eax\n"+
+                "pop ebx\n"+
+                "sub eax, ebx\n"+
+                "push eax\n";
     }
 
     private String compileMult(LambadaTree t){
-        return "";
+        return compileTree(t.getLeft())+
+                compileTree(t.getRight())+
+                "pop eax\n"+
+                "pop ebx\n"+
+                "mul eax, ebx\n"+
+                "push eax\n";
     }
 
     private String compileDiv(LambadaTree t){
-        return "";
+        return compileTree(t.getLeft())+
+                compileTree(t.getRight())+
+                "pop eax\n"+
+                "pop ebx\n"+
+                "div ebx, eax\n"+
+                "push eax\n";
     }
 
     private String compileMod(LambadaTree t){
-        return "";
+        return compileTree(t.getLeft())+
+                compileTree(t.getRight())+
+                "pop ebx\n"+
+                "pop eax\n"+
+                "mov ecx, eax\n"+
+                "div eax, ebx\n"+
+                "mul eax, ebx\n"+
+                "sub ecx, eax\n"+
+                "push ecx\n";
     }
 }

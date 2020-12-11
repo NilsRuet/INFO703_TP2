@@ -1,5 +1,11 @@
 let a = input;
 let b = input;
 let c = a+b;
-let c = -c;
+output c;
+let d = input;
+let e = input;
+let c = c / (e-d);
+output c;
+let f = input;
+let c = c mod f;
 output c .
