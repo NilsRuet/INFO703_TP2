@@ -1,11 +1,3 @@
 let a = input;
 let b = input;
-let c = a+b;
-output c;
-let d = input;
-let e = input;
-let c = c / (e-d);
-output c;
-let f = input;
-let c = c mod f;
-output c .
+if (a = b) then (output a) else (output b).

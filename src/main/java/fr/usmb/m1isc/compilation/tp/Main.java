@@ -22,9 +22,8 @@ public class Main {
 		Context ctx = new Context(program);
 		Compiler cp = new Compiler(program);
 		System.out.println(program);
-		String compiled = cp.compile();
-		System.out.println(compiled);
-		saveCompiled(compiled);
+		System.out.println(cp.code);
+		saveCompiled(cp.code);
 	}
 
 	private static void saveCompiled(String program){
