@@ -2,27 +2,70 @@ DATA SEGMENT
 a DD
 b DD
 c DD
+d DD
+e DD
 DATA ENDS
 CODE SEGMENT
-in eax
+mov eax,5
 push eax
 pop eax
 mov a,eax
-in eax
-push eax
-pop eax
-mov b,eax
-mov eax,a
-push eax
-mov eax,b
-push eax
-pop eax
-pop ebx
+mov eax,18
+mov ebx,a
 sub eax, ebx
 push eax
 pop eax
+mov b,eax
+mov eax,9
+mov ebx,4
+mul eax, ebx
+push eax
+pop ebx
+mov eax,b
+add eax, ebx
+push eax
+pop eax
 mov c,eax
+mov eax,8
+mov ebx,4
+div eax, ebx
+push eax
+pop eax
+mov d,eax
 mov eax,c
+mov ebx,d
+mul eax, ebx
+push eax
+mov eax,b
+mov ebx,a
+div eax, ebx
+push eax
+pop ebx
+pop eax
+mov ecx, eax
+div eax, ebx
+mul eax, ebx
+sub ecx, eax
+push ecx
+pop eax
+mov e,eax
+mov eax,a
+push eax
+pop eax
+out eax
+mov eax,b
+push eax
+pop eax
+out eax
+mov eax,c
+push eax
+pop eax
+out eax
+mov eax,d
+push eax
+pop eax
+out eax
+mov eax,e
 push eax
 pop eax
 out eax

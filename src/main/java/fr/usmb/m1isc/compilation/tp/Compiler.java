@@ -241,50 +241,65 @@ public class Compiler {
     }
 
     private String compilePlus(LambadaTree t){
-        return compileTree(t.getLeft())+
-                compileTree(t.getRight())+
-                "pop eax\n"+
-                "pop ebx\n"+
+        return loadBinaryOperands(t)+
                 "add eax, ebx\n"+
                 "push eax\n";
     }
 
     private String compileMinus(LambadaTree t){
-        return compileTree(t.getLeft())+
-                compileTree(t.getRight())+
-                "pop ebx\n"+
-                "pop eax\n"+
+        return loadBinaryOperands(t)+
                 "sub eax, ebx\n"+
                 "push eax\n";
     }
 
     private String compileMult(LambadaTree t){
-        return compileTree(t.getLeft())+
-                compileTree(t.getRight())+
-                "pop eax\n"+
-                "pop ebx\n"+
+        return loadBinaryOperands(t)+
                 "mul eax, ebx\n"+
                 "push eax\n";
     }
 
     private String compileDiv(LambadaTree t){
-        return compileTree(t.getLeft())+
-                compileTree(t.getRight())+
-                "pop ebx\n"+
-                "pop eax\n"+
+        return loadBinaryOperands(t)+
                 "div eax, ebx\n"+
                 "push eax\n";
     }
 
     private String compileMod(LambadaTree t){
-        return compileTree(t.getLeft())+
-                compileTree(t.getRight())+
-                "pop ebx\n"+
-                "pop eax\n"+
+        return loadBinaryOperands(t)+
                 "mov ecx, eax\n"+
                 "div eax, ebx\n"+
                 "mul eax, ebx\n"+
                 "sub ecx, eax\n"+
                 "push ecx\n";
+    }
+
+    // Charge les opérandes d'une opération binaire dans eax et ebx
+    private String loadBinaryOperands(LambadaTree t){
+        LambadaTree left = t.getLeft();
+        LambadaTree right = t.getRight();
+        String res;
+        if(loadableType(left.getType()) && loadableType(right.getType())){
+            res = String.format("mov eax,%s\n", left.getRac()) +
+                    String.format("mov ebx,%s\n", right.getRac());
+        } else if (loadableType(left.getType())) {
+            res = compileTree(right)+
+                    "pop ebx\n"+
+                    String.format("mov eax,%s\n", left.getRac());
+        } else if (loadableType(right.getType())){
+            res = compileTree(left)+
+                    "pop eax\n"+
+                    String.format("mov ebx,%s\n", right.getRac());
+        } else {
+            res = compileTree(t.getLeft())+
+                    compileTree(t.getRight())+
+                    "pop ebx\n"+
+                    "pop eax\n";
+        }
+        return res;
+    }
+
+    private boolean loadableType(LambadaTree.NodeType t){
+        return  t == LambadaTree.NodeType.IDENTIFIER
+                || t == LambadaTree.NodeType.INTEGER;
     }
 }

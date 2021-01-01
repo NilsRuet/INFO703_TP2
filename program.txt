@@ -1,4 +1,10 @@
-let a = input;
-let b = input;
-let c = a - b;
-output c .
+let a = 5;
+let b = 18 - a;
+let c = b + (9 * 4);
+let d = 8 / 4;
+let e = (c * d) mod (b / a);
+output a;
+output b;
+output c;
+output d;
+output e .
