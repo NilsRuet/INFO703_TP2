@@ -252,8 +252,8 @@ public class Compiler {
     private String compileMinus(LambadaTree t){
         return compileTree(t.getLeft())+
                 compileTree(t.getRight())+
-                "pop eax\n"+
                 "pop ebx\n"+
+                "pop eax\n"+
                 "sub eax, ebx\n"+
                 "push eax\n";
     }
@@ -270,10 +270,10 @@ public class Compiler {
     private String compileDiv(LambadaTree t){
         return compileTree(t.getLeft())+
                 compileTree(t.getRight())+
-                "pop eax\n"+
                 "pop ebx\n"+
-                "div ebx, eax\n"+
-                "push ebx\n";
+                "pop eax\n"+
+                "div eax, ebx\n"+
+                "push eax\n";
     }
 
     private String compileMod(LambadaTree t){
