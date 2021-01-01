@@ -1,6 +1,7 @@
 DATA SEGMENT
 a DD
 b DD
+aux DD
 DATA ENDS
 CODE SEGMENT
 in eax
@@ -11,30 +12,47 @@ in eax
 push eax
 pop eax
 mov b,eax
-mov eax,a
+while_start_1:
+mov eax,0
 push eax
 mov eax,b
 push eax
-pop eax
 pop ebx
-sub eax, ebx
-jnz eq_false_2
-push 1
-jmp eq_end_2
-eq_false_2:
-push 0
-eq_end_2:
 pop eax
-jz if_false_1
+sub eax, ebx
+jge lt_false_2
+push 1
+jmp lt_end_2
+lt_false_2:
+push 0
+lt_end_2:
+pop eax
+jz while_end_1
+mov eax,a
+push eax
+mov eax,b
+push eax
+pop ebx
+pop eax
+mov ecx, eax
+div eax, ebx
+mul eax, ebx
+sub ecx, eax
+push ecx
+pop eax
+mov aux,eax
+mov eax,b
+push eax
+pop eax
+mov a,eax
+mov eax,aux
+push eax
+pop eax
+mov b,eax
+jmp while_start_1
+while_end_1:
 mov eax,a
 push eax
 pop eax
 out eax
-jmp if_end_1
-if_false_1:
-mov eax,b
-push eax
-pop eax
-out eax
-if_end_1:
 CODE ENDS

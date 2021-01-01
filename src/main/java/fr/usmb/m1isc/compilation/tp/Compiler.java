@@ -76,20 +76,44 @@ public class Compiler {
             case EQ:
                 return compileEq(t);
             case LT:
-                return compileLT();
+                return compileLT(t);
             case LTE:
-                return compileLTE();
+                return compileLTE(t);
             default:
                 return "";
         }
     }
 
-    private String compileLTE() {
-        return "";
+    private String compileLTE(LambadaTree t) {
+        _idCounter++;
+        String id = Integer.toString(_idCounter);
+        return compileTree(t.getLeft())+
+                compileTree(t.getRight())+
+                "pop ebx\n"+
+                "pop eax\n"+
+                "sub eax, ebx\n"+
+                "jg lte_false_"+id+"\n"+
+                "push 1\n"+
+                "jmp lte_end_"+id+"\n"+
+                "lte_false_"+id+":\n"+
+                "push 0\n"+
+                "lte_end_"+id+":\n";
     }
 
-    private String compileLT() {
-        return "";
+    private String compileLT(LambadaTree t) {
+        _idCounter++;
+        String id = Integer.toString(_idCounter);
+        return compileTree(t.getLeft())+
+                compileTree(t.getRight())+
+                "pop ebx\n"+
+                "pop eax\n"+
+                "sub eax, ebx\n"+
+                "jge lt_false_"+id+"\n"+
+                "push 1\n"+
+                "jmp lt_end_"+id+"\n"+
+                "lt_false_"+id+":\n"+
+                "push 0\n"+
+                "lt_end_"+id+":\n";
     }
 
     private String compileEq(LambadaTree t) {
@@ -109,15 +133,48 @@ public class Compiler {
     }
 
     private String compileOr(LambadaTree t) {
-        return "";
+        _idCounter++;
+        String id = Integer.toString(_idCounter);
+        return  compileTree(t.getLeft())+
+                "pop eax\n"+
+                "jnz or_true_"+id+"\n"+//pas besoin de calculer la deuxième opérande si la première est vraie
+                compileTree(t.getRight())+
+                "pop ebx\n"+
+                "jnz or_true_"+id+"\n"+
+                "push 0\n"+
+                "jmp or_end_"+id+"\n"+
+                "or_true_"+id+":\n"+
+                "push 1\n"+
+                "or_end_"+id+":\n";
     }
 
     private String compileAnd(LambadaTree t) {
-        return "";
+        _idCounter++;
+        String id = Integer.toString(_idCounter);
+        return  compileTree(t.getLeft())+
+                "pop eax\n"+
+                "jz and_false_"+id+"\n"+//pas besoin de calculer la deuxième opérande si la première est fausse
+                compileTree(t.getRight())+
+                "pop ebx\n"+
+                "jz and_false_"+id+"\n"+
+                "push 1\n"+
+                "jmp and_end_"+id+"\n"+
+                "and_false_"+id+":\n"+
+                "push 0\n"+
+                "and_end_"+id+":\n";
     }
 
     private String compileNot(LambadaTree t) {
-        return "";
+        _idCounter++;
+        String id = Integer.toString(_idCounter);
+        return  compileTree(t.getRight())+
+                "pop eax\n"+
+                "jnz not_false_"+id+"\n"+//Si le résultat précédent est vrai, alors on va renvoyer faux
+                "push 1\n"+
+                "jmp not_end_"+id+"\n"+
+                "not_false_"+id+":\n"+
+                "push 0\n"+
+                "not_end_"+id+":\n";
     }
 
     private String compileIf(LambadaTree t) {
@@ -134,7 +191,15 @@ public class Compiler {
     }
 
     private String compileWhile(LambadaTree t) {
-        return "";
+        _idCounter++;
+        String id = Integer.toString(_idCounter);
+        return  "while_start_"+id+":\n"+
+                compileTree(t.getLeft())+
+                "pop eax\n"+
+                "jz while_end_"+id+"\n"+
+                compileTree(t.getRight())+
+                "jmp while_start_"+id+"\n"+
+                "while_end_"+id+":\n";
     }
 
     private String compileSemi(LambadaTree t){
